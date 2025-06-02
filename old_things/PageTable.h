@@ -1,8 +1,9 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include <iomanip>
 #include <cstdlib>
-#include <ctime>
 
 using namespace std;
 

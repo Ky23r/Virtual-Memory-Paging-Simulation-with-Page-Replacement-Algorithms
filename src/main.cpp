@@ -1,5 +1,12 @@
+#include "../include/PageTable.h"
+#include "../include/LRUPolicy.h"
+#include "../include/FIFOPolicy.h"
+#include "../include/LFUPolicy.h"
+#include "../include/NRUPolicy.h"
+#include "../include/SecondChancePolicy.h"
 #include <iostream>
-#include "pagetable.h"
+#include <iomanip>
+#include <memory>
 
 using namespace std;
 
@@ -40,17 +47,40 @@ int main() {
         cout << "Your choice: ";
         cin >> choice;
 
+        unique_ptr<ReplacementPolicy> policy;
+
+        switch (choice) {
+            case 1:
+                policy = make_unique<LRUPolicy>();
+                break;
+            case 2:
+                policy = make_unique<FIFOPolicy>();
+                break;
+            case 3:
+                policy = make_unique<LFUPolicy>();
+                break;
+            case 4:
+                policy = make_unique<NRUPolicy>();
+                break;
+            case 5:
+                policy = make_unique<SecondChancePolicy>();
+                break;
+            case 6:
+                cout << "Goodbye!\n";
+                break;
+            default:
+                cerr << "Invalid choice. Please select a number between 1 and 6.\n";
+        }
+
         if (choice == 6) {
-            cout << "Goodbye!\n";
             break;
         }
 
         if (choice < 1 || choice > 6) {
-            cerr << "Invalid choice. Please select a number between 1 and 6.\n";
             continue;
         }
 
-        PageTable page_table(logical_memory_size, physical_memory_size);
+        PageTable page_table(logical_memory_size, physical_memory_size, move(policy));
         page_table.set_page_fault_count(0);
 
         ll page_hit_count = 0;
@@ -74,10 +104,10 @@ int main() {
             }
             if (page_table.is_page_in_memory(page_number)) {
                 page_hit_count++;
-                page_table.access_page(page_number, choice);
+                page_table.access_page(page_number);
             } else {
-                page_table.load_page(page_number, choice);
-                page_table.access_page(page_number, choice);
+                page_table.load_page(page_number);
+                page_table.access_page(page_number);
             }
         }
 
@@ -95,7 +125,6 @@ int main() {
     }
     return 0;
 }
-
 
 bool is_valid_size(ll size) {
     return size >= 0;
