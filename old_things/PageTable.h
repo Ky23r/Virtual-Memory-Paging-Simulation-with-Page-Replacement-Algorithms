@@ -83,7 +83,7 @@ void PageTable::access_page(ll page_number, int choice) {
 
     access_counter++;
 
-    if (access_counter % RESET_INTERVAL == 0) {
+    if ((choice == 4 || choice == 5) && access_counter % RESET_INTERVAL == 0) {
         reset_reference_bits();
         cout << "[Info] Reference bits reset.\n";
     }
